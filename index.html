@@ -7,36 +7,34 @@
     <base href="/hai/">
     <link rel="stylesheet" href="./assets/index-Co4tJcIq.css">
     <script>
-        // 修复绝对路径的资源加载问题
+        // 修复绝对路径的资源加载问题 - GitHub Pages
         (function() {
             var basePath = '/hai';
+            var pathRegex = /^\/assets\//;
             
-            // 拦截 fetch 请求
+            // 修复 URL 的函数
+            function fixPath(url) {
+                if (typeof url === 'string' && pathRegex.test(url)) {
+                    return basePath + url;
+                }
+                return url;
+            }
+            
+            // 拦截 fetch
             var originalFetch = window.fetch;
             window.fetch = function(input, init) {
-                if (typeof input === 'string' && input.startsWith('/assets/')) {
-                    input = basePath + input;
+                if (typeof input === 'string') {
+                    input = fixPath(input);
+                } else if (input && input.url) {
+                    input = new Request(fixPath(input.url), input);
                 }
                 return originalFetch.call(this, input, init);
             };
             
-            // 拦截 Image 构造函数
-            var OriginalImage = window.Image;
-            window.Image = function(width, height) {
-                var img = new OriginalImage(width, height);
-                var originalSrc = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src');
-                Object.defineProperty(img, 'src', {
-                    get: function() {
-                        return originalSrc.get.call(this);
-                    },
-                    set: function(value) {
-                        if (typeof value === 'string' && value.startsWith('/assets/')) {
-                            value = basePath + value;
-                        }
-                        originalSrc.set.call(this, value);
-                    }
-                });
-                return img;
+            // 拦截 XMLHttpRequest
+            var originalOpen = XMLHttpRequest.prototype.open;
+            XMLHttpRequest.prototype.open = function(method, url, async, user, password) {
+                return originalOpen.call(this, method, fixPath(url), async, user, password);
             };
         })();
     </script>
