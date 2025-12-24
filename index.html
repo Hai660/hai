@@ -6,6 +6,19 @@
     <title>项目</title>
     <base href="/hai/">
     <link rel="stylesheet" href="./assets/index-Co4tJcIq.css">
+    <script>
+        // 修复绝对路径的资源加载问题
+        (function() {
+            var basePath = '/hai';
+            var originalFetch = window.fetch;
+            window.fetch = function(input, init) {
+                if (typeof input === 'string' && input.startsWith('/assets/')) {
+                    input = basePath + input;
+                }
+                return originalFetch.call(this, input, init);
+            };
+        })();
+    </script>
 </head>
 <body>
     <div id="root"></div>
