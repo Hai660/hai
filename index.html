@@ -5,45 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>项目</title>
     <link rel="stylesheet" href="./assets/index-Co4tJcIq.css">
-    <script>
-        // 确保使用现代的 getUserMedia API，并添加权限检查
-        (function() {
-            // 检查是否支持摄像头
-            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                console.warn('摄像头 API 不支持');
-                
-                // 尝试使用旧版 API 作为后备
-                if (!navigator.getUserMedia) {
-                    navigator.getUserMedia = navigator.getUserMedia || 
-                                             navigator.webkitGetUserMedia || 
-                                             navigator.mozGetUserMedia || 
-                                             navigator.msGetUserMedia;
-                }
-                
-                // 如果旧版 API 也不支持，提示用户
-                if (!navigator.getUserMedia) {
-                    console.error('浏览器不支持摄像头访问');
-                }
-            }
-            
-            // 检查是否在 HTTPS 环境（移动设备必需）
-            if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
-                console.warn('摄像头访问需要 HTTPS 环境');
-            }
-            
-            // 监听权限状态变化
-            if (navigator.permissions && navigator.permissions.query) {
-                navigator.permissions.query({ name: 'camera' }).then(function(result) {
-                    console.log('摄像头权限状态:', result.state);
-                    result.onchange = function() {
-                        console.log('摄像头权限状态已更改:', result.state);
-                    };
-                }).catch(function(err) {
-                    console.warn('无法查询摄像头权限状态:', err);
-                });
-            }
-        })();
-    </script>
 </head>
 <body>
     <div id="root"></div>
