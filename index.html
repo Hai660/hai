@@ -10,12 +10,33 @@
         // 修复绝对路径的资源加载问题
         (function() {
             var basePath = '/hai';
+            
+            // 拦截 fetch 请求
             var originalFetch = window.fetch;
             window.fetch = function(input, init) {
                 if (typeof input === 'string' && input.startsWith('/assets/')) {
                     input = basePath + input;
                 }
                 return originalFetch.call(this, input, init);
+            };
+            
+            // 拦截 Image 构造函数
+            var OriginalImage = window.Image;
+            window.Image = function(width, height) {
+                var img = new OriginalImage(width, height);
+                var originalSrc = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src');
+                Object.defineProperty(img, 'src', {
+                    get: function() {
+                        return originalSrc.get.call(this);
+                    },
+                    set: function(value) {
+                        if (typeof value === 'string' && value.startsWith('/assets/')) {
+                            value = basePath + value;
+                        }
+                        originalSrc.set.call(this, value);
+                    }
+                });
+                return img;
             };
         })();
     </script>
